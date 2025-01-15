@@ -21,18 +21,15 @@ const login = async (req, res) => {
   try {
     const userExists = await User.findOne({ email });
     if (!userExists) {
-      // return res.status(400).json({ msg: "User not found, register!!" });
-
       throw Error("Email not found");
     }
 
     // Authenticate pass
     const authentication = await userExists.comparePassword(password);
     if (!authentication) {
-      // return res.status(400).json({ msg: "Invalid email or password" });
-
       throw Error("password not correct");
     }
+    
     //gen token
     const token = userExists.generateToken();
     return res.status(200).json({

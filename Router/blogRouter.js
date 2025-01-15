@@ -1,20 +1,20 @@
 import {
   createBlog,
+  getBlogs,
   getBlog,
-  getSingleBlog,
   updateBlog,
   deleteBlog,
-  getAllUserBlog,
-  getAllUserSingleBlog,
+  getAllBlogs,
+  getAllSingleBlog,
 } from "../Controller/blogController.js";
 import express from "express";
 const router = express.Router();
 
 router.post("/blog", createBlog);
-router.get("/blog", getBlog);
-router.get("/allBlog", getAllUserBlog);
-router.get("/blog/:blogId", getSingleBlog);
-router.get("/allBlog/:blogId", getAllUserSingleBlog);
+router.get("/blog", getBlogs);
+router.get("/allBlog", getAllBlogs);
+router.get("/blog/:blogId", getBlog);
+router.get("/allBlog/:blogId", getAllSingleBlog);
 router.patch("/blog/:blogId", updateBlog);
 router.delete("/blog/:blogId", deleteBlog);
 

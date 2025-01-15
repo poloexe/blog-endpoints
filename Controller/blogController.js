@@ -1,4 +1,5 @@
 import Blog from "../Model/blog.js";
+import handleBlogError from "../utils/handleBlogError.js";
 
 //Create a blog
 const createBlog = async (req, res) => {
@@ -9,12 +10,13 @@ const createBlog = async (req, res) => {
     const blog = await Blog.create(req.body);
     return res.status(201).json({ success: true, blog });
   } catch (error) {
-    return res.status(400).json({ error });
+    const errors = handleBlogError(error);
+    return res.status(400).json({ errors });
   }
 };
 
 // Get all blogs for that user
-const getBlog = async (req, res) => {
+const getBlogs = async (req, res) => {
   const { userId } = req.user;
   try {
     const blogs = await Blog.find({ createdby: userId });
@@ -27,7 +29,7 @@ const getBlog = async (req, res) => {
 };
 
 // Get a single blog for that user
-const getSingleBlog = async (req, res) => {
+const getBlog = async (req, res) => {
   const { userId } = req.user;
   const { blogId } = req.params;
   try {
@@ -55,9 +57,8 @@ const updateBlog = async (req, res) => {
     );
     return res.status(200).json({ success: true, blogs });
   } catch (error) {
-    return res
-      .status(400)
-      .json({ success: false, error: "Failed to Update blogs" });
+    const errors = handleBlogError(error);
+    return res.status(400).json(errors);
   }
 };
 
@@ -66,7 +67,7 @@ const deleteBlog = async (req, res) => {
   const { userId } = req.user;
   const { blogId } = req.params;
   try {
-    const blogs = await Blog.findByIdAndDelete({
+    const blog = await Blog.findByIdAndDelete({
       createdby: userId,
       _id: blogId,
     });
@@ -74,31 +75,42 @@ const deleteBlog = async (req, res) => {
       .status(200)
       .json({ success: true, msg: "Blog deleted successfully" });
   } catch (error) {
-    return res
-      .status(400)
-      .json({ success: false, error: "Failed to Delete blogs" });
+    const errors = handleBlogError(error);
+    return res.status(400).json(errors);
   }
 };
 
-// Get single blogs regardless of the user
-const getAllUserSingleBlog = async (req, res) => {
-  const { blogId } = req.params;
+// Get all blogs regardless of the user
+const getAllBlogs = async (req, res) => {
   try {
-    const blogs = await Blog.findOne({ _id: blogId });
+    const blogs = await Blog.find({});
     return res.status(200).json({ success: true, blogs });
   } catch (error) {
     return res
       .status(400)
-      .json({ success: false, error: "Failed to get all user blogs" });
+      .json({ success: false, error: "Failed to get all blogs" });
+  }
+};
+
+// Get single blog regardless of the user
+const getAllSingleBlog = async (req, res) => {
+  const { blogId } = req.params;
+  try {
+    const blog = await Blog.findOne({ _id: blogId });
+    return res.status(200).json({ success: true, blog });
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ success: false, error: "Failed to get blog" });
   }
 };
 
 export {
   createBlog,
+  getBlogs,
   getBlog,
-  getSingleBlog,
   updateBlog,
   deleteBlog,
-  getAllUserBlog,
-  getAllUserSingleBlog,
+  getAllBlogs,
+  getAllSingleBlog,
 };
